@@ -1,5 +1,6 @@
 param(
-    [string]$SubscriptionId = '84b46d67-e6a9-4742-93e2-eb234853b4db',
+    [Parameter(Mandatory=$false)]
+    [string]$SubscriptionId = '',
     [string]$ResourceGroup = 'tr-en-interpreter-rg',
     [string]$Location = 'eastus',
     [string]$StorageAccountName = "treninterp$([Guid]::NewGuid().ToString('N').Substring(0, 8))",

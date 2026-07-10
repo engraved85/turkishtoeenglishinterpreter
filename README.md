@@ -15,8 +15,59 @@ The app uses a very simple architecture:
 - Frontend: static HTML, CSS, and JavaScript in the public folder
 - Backend: a small Node.js Express server that issues temporary Azure Speech access tokens
 - Azure services used:
-  - Azure Speech resource for speech recognition and translation
-  - Azure Storage static website hosting for the frontend
+  - One Azure Speech resource for speech recognition, translation, and authentication
+  - One Azure Storage account for hosting the frontend as a static website
+
+## How the Azure configuration works
+This app is intentionally designed around a single Azure Speech resource, which is enough to support both directions of interpretation.
+
+### Why one Speech resource can handle both directions
+The app does not need two separate services for Turkish → English and English → Turkish. Instead, the frontend switches the active language pair at runtime:
+- English → Turkish uses English as the source language and Turkish as the target language
+- Turkish → English uses Turkish as the source language and English as the target language
+
+The same Azure Speech resource is reused for both cases because the app simply changes the source and target language settings for the current session.
+
+### How speech recognition and translation work
+1. The browser captures microphone audio.
+2. The frontend requests a temporary access token from the backend.
+3. The backend uses the Speech key and region from the environment variables to call Azure Speech’s token endpoint.
+4. The browser uses that token with the Speech SDK to start a translation recognizer.
+5. Azure Speech returns recognized text and the translated text for the selected target language.
+
+### How the synthesized voice playback works
+The app also includes spoken playback of the translated output. This is implemented with the browser’s built-in speech synthesis API rather than by creating a second Azure resource.
+
+In practice, that means:
+- the translated text is displayed in the UI
+- the app can read that text aloud using the browser’s native speech engine
+- the speaker button and auto-play option trigger the playback experience
+
+This is why the app can support both translation and playback without needing a separate Azure speech synthesis service in the initial setup.
+
+### What the deployment script creates
+The deployment script in deploy.ps1 creates:
+- a resource group for the project
+- one Azure Speech resource for recognition and translation
+- one Azure Storage account with static website hosting enabled
+- a generated public/config.js file that stores the Speech key and region for the frontend
+
+### Important clarification about the current implementation
+This app currently uses Azure Speech for speech recognition and translation, and uses the browser for voice playback. It does not currently use an LLM such as Azure OpenAI for translation.
+
+## End-to-end request flow
+Here is the flow of a typical interaction in the app:
+
+1. The user opens the app in the browser.
+2. The browser requests a temporary Azure Speech token from the Express backend.
+3. The backend returns the token using the Speech key and region stored in the environment variables.
+4. The frontend starts a translation recognizer with the microphone input.
+5. Azure Speech recognizes the spoken input and returns the translated text.
+6. The app displays the source text and translated text in the UI.
+7. If playback is enabled, the browser speaks the translated text aloud using its built-in speech synthesis engine.
+
+In short, the request path is:
+- Browser microphone → Azure Speech recognition/translation → UI display → browser playback
 
 ## Project structure
 - public/index.html — main UI
@@ -119,7 +170,7 @@ Run:
 
 Example:
 ```powershell
-./deploy.ps1 -SubscriptionId 84b46d67-e6a9-4742-93e2-eb234853b4db -Location eastus
+./deploy.ps1 -SubscriptionId <your-subscription-id> -Location eastus
 ```
 
 ### Important notes about deployment
