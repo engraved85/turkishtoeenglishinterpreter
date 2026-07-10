@@ -1,0 +1,15 @@
+{
+  "name": "turkish-english-interpreter",
+  "version": "1.0.0",
+  "description": "Azure-based Turkish to English spoken interpreter app using Azure Speech Translation.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

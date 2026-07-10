@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bidirectional Spoken Interpreter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Bidirectional Spoken Interpreter</h1>
+    <p>Select the direction and speak naturally to translate live between Turkish and English.</p>
+
+    <div id="controls">
+      <label class="select-wrap" for="directionSelect">
+        <span>Direction</span>
+        <select id="directionSelect">
+          <option value="tr-en">Turkish → English</option>
+          <option value="en-tr">English → Turkish</option>
+        </select>
+      </label>
+      <label class="checkbox-wrap" for="speakToggle">
+        <input id="speakToggle" type="checkbox" />
+        <span>Auto-play translated text</span>
+      </label>
+      <button id="speakButton" disabled>🔊 Speak Translation</button>
+      <button id="startButton">Start Translation</button>
+      <button id="stopButton" disabled>Stop</button>
+    </div>
+
+    <div id="status">Ready</div>
+
+    <div class="transcript">
+      <div>
+        <h2 id="sourceHeading">Turkish</h2>
+        <pre id="sourceOutput"></pre>
+      </div>
+      <div>
+        <h2 id="translationHeading">English</h2>
+        <pre id="translationOutput"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
